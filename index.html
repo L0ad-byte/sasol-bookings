@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Tags -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>sasol bookings</title>
+
+  <!-- Link to the manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="content">
+      <!-- Image -->
+      <img src="icons/form-image.png" alt="sasol bookings" class="form-image">
+
+      <!-- Form Section -->
+      <form id="myForm">
+        <label>
+          Date (dd/MM/yyyy)
+          <input type="text" id="date" placeholder="dd/MM/yyyy" required>
+          <span class="error" id="dateError"></span>
+        </label>
+
+        <label>
+          Name & Surname
+          <input type="text" id="name" required>
+        </label>
+
+        <label>
+          ID Number (13 digits)
+          <input type="text" id="idNumber" required>
+          <span class="error" id="idError"></span>
+        </label>
+
+        <label>
+          Contact Number (10 digits)
+          <input type="text" id="contactNumber" required>
+          <span class="error" id="contactError"></span>
+        </label>
+
+        <label>
+          Booking Needed
+          <select id="bookingNeeded" required></select>
+        </label>
+
+        <button type="submit" id="submitButton">
+          Submit
+          <div class="spinner" id="spinner"></div>
+        </button>
+      </form>
+
+      <!-- Success Message Section -->
+      <div id="successMessage" class="success-message">
+        <h1>Form Submitted Successfully!</h1>
+        <p>Thank you for your submission.</p>
+        <button id="newSubmissionButton">Submit Another Response</button>
+        <!-- Clear Data Button -->
+        <button id="clearDataButton">Clear Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Code -->
+  <script src="script.js"></script>
+
+  <!-- Register Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(registration => {
+          console.log('ServiceWorker registration successful:', registration);
+        })
+        .catch(error => {
+          console.log('ServiceWorker registration failed:', error);
+        });
+    }
+  </script>
+</body>
+</html>
