@@ -2,31 +2,61 @@
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyi_XZcb9OoQzi8VJTDbAdbVmd7u-m_X-qYWJex1TrHTqANMLcneNLKIeWh1FKsd1TB/exec';
 const SECRET_TOKEN = '552'; // Must match the token in Code.gs
 
-// Populate Booking Needed dropdown
+// Function to populate Booking Needed dropdown
 function populateBookingOptions() {
-  fetch(GAS_WEB_APP_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'getOptionsList', token: SECRET_TOKEN }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(options => {
-    var select = document.getElementById('bookingNeeded');
-    options.forEach(function(optionText) {
-      var option = document.createElement('option');
-      option.value = optionText;
-      option.text = optionText;
-      select.add(option);
+  if (navigator.onLine) {
+    // Online: Fetch options from backend
+    fetch(GAS_WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'getOptionsList', token: SECRET_TOKEN }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(options => {
+      // Cache options locally
+      localStorage.setItem('bookingOptions', JSON.stringify(options));
+
+      // Populate the dropdown
+      updateBookingOptions(options);
+    })
+    .catch(error => {
+      console.error('Error fetching options:', error);
+      // If error occurs, try to use cached options
+      useCachedOptions();
     });
-  })
-  .catch(error => {
-    console.error('Error fetching options:', error);
+  } else {
+    // Offline: Use cached options
+    useCachedOptions();
+  }
+}
+
+// Function to update the Booking Needed dropdown
+function updateBookingOptions(options) {
+  var select = document.getElementById('bookingNeeded');
+  select.innerHTML = ''; // Clear existing options
+  options.forEach(function(optionText) {
+    var option = document.createElement('option');
+    option.value = optionText;
+    option.text = optionText;
+    select.add(option);
   });
 }
 
-// Call the function to populate options
+// Function to use cached options
+function useCachedOptions() {
+  var cachedOptions = localStorage.getItem('bookingOptions');
+  if (cachedOptions) {
+    var options = JSON.parse(cachedOptions);
+    updateBookingOptions(options);
+  } else {
+    // No cached options available
+    alert('No booking options available offline. Please connect to the internet to load options.');
+  }
+}
+
+// Call the function to populate options when the page loads
 populateBookingOptions();
 
 // Function to format date with slashes as the user types
@@ -160,8 +190,11 @@ function syncData() {
   }
 }
 
-// Listen for online event to sync data
-window.addEventListener('online', syncData);
+// Listen for online event to sync data and update options
+window.addEventListener('online', function() {
+  syncData();
+  populateBookingOptions(); // Update options when back online
+});
 
 // Form submission handler
 document.getElementById('myForm').addEventListener('submit', function(e) {
@@ -281,16 +314,25 @@ document.getElementById('newSubmissionButton').addEventListener('click', functio
   // Reset the form
   document.getElementById('myForm').reset();
   prefillDate();
+  populateBookingOptions(); // Ensure options are loaded
 });
 
-// Add event listener for the Clear Data button
+// Add event listener for the Clear Data/Clear Cache button
 document.getElementById('clearDataButton').addEventListener('click', function() {
   // Confirm the action with the user
-  if (confirm('Are you sure you want to clear all locally stored data?')) {
+  if (confirm('Are you sure you want to clear all locally stored data and cached options?')) {
     // Clear localStorage
     localStorage.removeItem('submissions');
+    localStorage.removeItem('bookingOptions');
 
     // Provide feedback to the user
-    alert('All locally stored data has been cleared.');
+    alert('All locally stored data and cached options have been cleared.');
+
+    // Reset the form and reload options
+    document.getElementById('successMessage').style.display = 'none';
+    document.getElementById('myForm').style.display = 'block';
+    document.getElementById('myForm').reset();
+    prefillDate();
+    populateBookingOptions();
   }
 });
