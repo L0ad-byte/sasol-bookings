@@ -1,5 +1,5 @@
 // Replace with your Google Apps Script Web App URL
-const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyi_XZcb9OoQzi8VJTDbAdbVmd7u-m_X-qYWJex1TrHTqANMLcneNLKIeWh1FKsd1TB/exec';
+const GAS_WEB_APP_URL = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbyi_XZcb9OoQzi8VJTDbAdbVmd7u-m_X-qYWJex1TrHTqANMLcneNLKIeWh1FKsd1TB/exec';
 const SECRET_TOKEN = '552'; // Must match the token in Code.gs
 
 // Function to populate Booking Needed dropdown
